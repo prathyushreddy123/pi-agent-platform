@@ -1,0 +1,9 @@
+# dependencies
+node_modules/
+# local/runtime state (not portable)
+*.log
+*.sock
+.DS_Store
+# task state db (Phase 9) — keep schema, ignore live data
+scripts/state/*.db
+scripts/state/*.sqlite
