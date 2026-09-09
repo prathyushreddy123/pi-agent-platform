@@ -3,8 +3,8 @@
 # bootstrap.sh — link this repo's portable assets into ~/.pi/agent/.
 #
 # Makes agent-platform the single source of truth (Phase 14): prompts, skills,
-# and the global AGENTS.md are symlinked from here into the live Pi config so
-# edits in the repo take effect immediately with no drift.
+# the global AGENTS.md, and repository-owned extensions are symlinked from here
+# into the live Pi config so edits take effect immediately with no drift.
 #
 # It ONLY touches portable assets. It never creates, reads, or overwrites
 # secrets/runtime state in ~/.pi/agent/ (auth.json, models-store.json,
@@ -37,6 +37,7 @@ LINKS=(
   "prompts:prompts"
   "skills:skills"
   "templates/global-AGENTS.md:AGENTS.md"
+  "extensions/herdr-orchestrator:extensions/herdr-orchestrator"
 )
 
 status=0
@@ -63,8 +64,10 @@ link_one() {
 
   if [[ $DRY_RUN -eq 1 ]]; then
     info "would link: $dst -> $src"
-    [[ -e "$dst" && ! -L "$dst" ]] && info "  (would back up existing $dst)"
-    return
+    if [[ -e "$dst" && ! -L "$dst" ]]; then
+      info "  (would back up existing $dst)"
+    fi
+    return 0
   fi
 
   mkdir -p "$(dirname "$dst")"

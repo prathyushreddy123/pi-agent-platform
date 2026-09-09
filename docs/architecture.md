@@ -51,11 +51,11 @@ actions.
 - **Extensions** (`extensions/`) — real new capabilities Pi's built-in tools
   can't cover cleanly.
 
-## Planned extensions
+## Extensions
 
-- `worktree-manager` — create/list/inspect/remove task worktrees safely.
-- `herdr-orchestrator` — spawn/prompt/query/read/wait on agents via Herdr,
-  behind an agent-type-agnostic interface.
+- `worktree-manager` — planned Pi wrapper around the safe Phase 6 script.
+- `herdr-orchestrator` — initial implementation can spawn, prompt, query, wait
+  for, and read agents through Herdr using agent-type-agnostic tools.
 - `task-manager` — lightweight task state (JSON/SQLite).
 - `safety-gate` — approval gates for destructive operations.
 

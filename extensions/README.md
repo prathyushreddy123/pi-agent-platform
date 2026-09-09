@@ -1,12 +1,11 @@
 # Extensions
 
 Pi extensions add **new capabilities** Pi cannot perform cleanly with its
-built-in tools. Implemented incrementally; these are placeholders describing
-intent.
+built-in tools. They are implemented incrementally.
 
-- `worktree-manager/` — create/list/inspect/remove task worktrees (Phase 6).
+- `worktree-manager/` — future Pi tool wrapper for the Phase 6 shell automation.
 - `herdr-orchestrator/` — spawn/prompt/query/read/wait on agents via Herdr,
-  behind an agent-type-agnostic interface (Phase 7).
+  behind an agent-type-agnostic interface (Phase 7, initial version complete).
 - `task-manager/` — lightweight task state tracking (Phase 9).
 - `safety-gate/` — approval gates for destructive operations (Phase 10).
 
