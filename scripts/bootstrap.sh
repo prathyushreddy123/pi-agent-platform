@@ -38,6 +38,7 @@ LINKS=(
   "skills:skills"
   "templates/global-AGENTS.md:AGENTS.md"
   "extensions/herdr-orchestrator:extensions/herdr-orchestrator"
+  "extensions/task-manager:extensions/task-manager"
 )
 
 status=0

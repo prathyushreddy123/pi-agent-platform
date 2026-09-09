@@ -1,14 +1,20 @@
 ---
 description: Produce a concise task handoff summary
 ---
-Produce a concise handoff for the current task so another agent or I can pick it
-up cleanly. Use this exact structure:
+Produce a concise, evidence-based handoff so another agent or I can continue
+cleanly. Inspect the current repository state instead of relying only on prior
+agent claims. Use this exact structure:
 
 **Objective** — what this task is trying to achieve.
-**Status** — done / in progress / blocked, in one line.
-**Changed files** — list files touched (from `git status`/`git diff`).
-**Commands run** — build/test/lint commands executed and their results.
-**Known issues** — bugs, gaps, or risks still open.
-**Next step** — the single most useful next action.
+**Status** — planned / assigned / working / blocked / review / completed / failed.
+**Task context** — task ID, role/agent, worktree, and branch when available.
+**Changed files** — files touched, distinguishing staged from unstaged changes.
+**Commands/checks** — build/test/lint commands and their observed results.
+**Results** — concise implementation or review result, including verdict if any.
+**Known issues** — unresolved bugs, gaps, risks, and assumptions.
+**Next step** — the single most useful next action and who should perform it.
 
-Keep it short and factual. Do not include unchanged boilerplate.
+If task-manager state exists, reconcile it with fresh `git status` and diff
+evidence. Call out contradictions explicitly. Never imply that work was merged,
+pushed, deployed, or cleaned up unless independently verified. Keep it short
+and factual.

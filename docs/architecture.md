@@ -56,7 +56,8 @@ actions.
 - `worktree-manager` — planned Pi wrapper around the safe Phase 6 script.
 - `herdr-orchestrator` — initial implementation can spawn, prompt, query, wait
   for, and read agents through Herdr using agent-type-agnostic tools.
-- `task-manager` — lightweight task state (JSON/SQLite).
+- `task-manager` — atomic per-task JSON state with validated transitions,
+  revisions, structured results, and evidence-based handoffs.
 - `safety-gate` — approval gates for destructive operations.
 
 Extensions are scaffolded but implemented incrementally, only after the simpler
