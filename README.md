@@ -38,6 +38,7 @@ agent-platform/
 
 ## Status
 
-Phases 0–9 are complete, including safe worktree automation, initial Pi ↔ Herdr
-orchestration, a lead/worker/reviewer demonstration, and durable task state with
-structured handoffs. See [`docs/roadmap.md`](docs/roadmap.md) for phase status.
+Phases 0–10 are complete, including safe worktree automation, Pi ↔ Herdr
+orchestration, lead/worker/reviewer workflow, durable task state and handoffs,
+and fail-closed safety gates. See [`docs/roadmap.md`](docs/roadmap.md) for phase
+status.

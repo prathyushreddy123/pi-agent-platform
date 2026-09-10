@@ -39,6 +39,7 @@ LINKS=(
   "templates/global-AGENTS.md:AGENTS.md"
   "extensions/herdr-orchestrator:extensions/herdr-orchestrator"
   "extensions/task-manager:extensions/task-manager"
+  "extensions/safety-gate:extensions/safety-gate"
 )
 
 status=0

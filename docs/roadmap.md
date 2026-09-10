@@ -14,7 +14,7 @@ Incremental build. Status as of initial scaffold.
 | 7 | Pi ↔ Herdr integration | done (initial round-trip + extension tools) |
 | 8 | Lead / worker / reviewer workflow | done ([demo](phase8-demo.md)) |
 | 9 | Task state | done ([JSON state and handoffs](task-state.md)) |
-| 10 | Safety gates | planned |
+| 10 | Safety gates | done ([policy and limitations](safety-gates.md)) |
 | 11 | Sandboxed execution (Docker) | planned |
 | 12 | Herdr workspace layout template | planned |
 | 13 | Client project template | planned |

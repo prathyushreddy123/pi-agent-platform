@@ -2,7 +2,12 @@ import { stat } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { StringEnum } from "@earendil-works/pi-ai";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import {
+  DEFAULT_MAX_BYTES,
+  formatSize,
+  truncateTail,
+  type ExtensionAPI,
+} from "@earendil-works/pi-coding-agent";
 import { Type } from "typebox";
 
 type ExecResult = {
@@ -67,6 +72,21 @@ export default function herdrOrchestrator(pi: ExtensionAPI) {
     return result;
   }
 
+  async function assertAgentNameAvailable(name: string, signal?: AbortSignal): Promise<void> {
+    const result = await runHerdr(["agent", "list"], signal);
+    const envelope = parseJsonObject(result.stdout, "agent list");
+    const listResult = nestedObject(envelope.result, "result");
+    const agents = Array.isArray(listResult.agents) ? listResult.agents : [];
+    const collision = agents.some(
+      (candidate) =>
+        candidate &&
+        typeof candidate === "object" &&
+        !Array.isArray(candidate) &&
+        (candidate as JsonObject).name === name,
+    );
+    if (collision) throw new Error(`A live Herdr agent already uses the name '${name}'`);
+  }
+
   async function chooseSplitDirection(signal?: AbortSignal): Promise<"right" | "down"> {
     const paneId = process.env.HERDR_PANE_ID!;
     const result = await runHerdr(["pane", "layout", "--pane", paneId], signal);
@@ -112,8 +132,13 @@ export default function herdrOrchestrator(pi: ExtensionAPI) {
         Type.String({ description: "Existing directory; defaults to the lead Pi session directory" }),
       ),
       direction: Type.Optional(directionSchema),
+      wait: Type.Optional(
+        Type.Boolean({ description: "Wait for the submitted task to settle; defaults to true" }),
+      ),
+      timeoutMs: Type.Optional(Type.Integer({ minimum: 1_000, maximum: 300_000 })),
     }),
     async execute(_toolCallId, params, signal, onUpdate, ctx) {
+      await assertAgentNameAvailable(params.name, signal);
       const cwd = resolve(ctx.cwd, params.workingDirectory ?? ".");
       const cwdStat = await stat(cwd).catch(() => undefined);
       if (!cwdStat?.isDirectory()) {
@@ -171,21 +196,28 @@ export default function herdrOrchestrator(pi: ExtensionAPI) {
           `Task: ${params.task}`,
           "Stay within this task's scope. Report assumptions, changed files, checks run, and unresolved issues.",
         ].join("\n\n");
-        await runHerdr(["agent", "prompt", params.name, assignment], signal);
+        const promptArgs = ["agent", "prompt", params.name, assignment];
+        const shouldWait = params.wait !== false;
+        const timeout = params.timeoutMs ?? 120_000;
+        if (shouldWait) promptArgs.push("--wait", "--timeout", String(timeout));
+        await runHerdr(promptArgs, signal, shouldWait ? timeout + 5_000 : 30_000);
       } catch (error) {
         throw new Error(
-          `Agent setup failed after creating pane ${paneId}; the pane was kept for inspection. ${error instanceof Error ? error.message : String(error)}`,
+          `Agent setup or prompt failed after creating pane ${paneId}; the pane was kept because the agent may still be running. Inspect '${params.name}' or ${paneId} before cleanup. ${error instanceof Error ? error.message : String(error)}`,
         );
       }
 
+      const waited = params.wait !== false;
       return {
         content: [
           {
             type: "text",
-            text: `Started ${params.agentType} agent '${params.name}' in ${paneId} and submitted its task.`,
+            text: waited
+              ? `Started ${params.agentType} agent '${params.name}' in ${paneId}; its submitted task reached a settled state.`
+              : `Started ${params.agentType} agent '${params.name}' in ${paneId} and submitted its task without waiting.`,
           },
         ],
-        details: { name: params.name, agentType: params.agentType, paneId, cwd },
+        details: { name: params.name, agentType: params.agentType, paneId, cwd, waited },
       };
     },
   });
@@ -255,7 +287,7 @@ export default function herdrOrchestrator(pi: ExtensionAPI) {
   pi.registerTool({
     name: "herdr_read_agent_output",
     label: "Read Herdr Agent Output",
-    description: "Read recent unwrapped terminal output from a named Herdr agent, limited to at most 500 lines.",
+    description: "Read recent unwrapped terminal output from a named Herdr agent, limited to 500 lines and 50KB. Excess output is discarded; ask the agent to write a file when complete output is required.",
     parameters: Type.Object({
       target: Type.String({ description: "Unique agent name or pane ID" }),
       lines: Type.Optional(Type.Integer({ minimum: 1, maximum: 500 })),
@@ -273,9 +305,21 @@ export default function herdrOrchestrator(pi: ExtensionAPI) {
         ],
         signal,
       );
+      const truncation = truncateTail(result.stdout, {
+        maxLines: params.lines ?? 120,
+        maxBytes: DEFAULT_MAX_BYTES,
+      });
+      let text = truncation.content;
+      if (truncation.truncated) {
+        text += `\n\n[Herdr output truncated to ${truncation.outputLines} lines / ${formatSize(truncation.outputBytes)}. Ask the agent to write its complete response to a file, then read that file directly.]`;
+      }
       return {
-        content: [{ type: "text", text: result.stdout }],
-        details: { target: params.target, lines: params.lines ?? 120 },
+        content: [{ type: "text", text }],
+        details: {
+          target: params.target,
+          requestedLines: params.lines ?? 120,
+          truncated: truncation.truncated,
+        },
       };
     },
   });
