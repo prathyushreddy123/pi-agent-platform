@@ -75,6 +75,7 @@ LINKS=(
   "extensions/herdr-orchestrator:extensions/herdr-orchestrator"
   "extensions/task-manager:extensions/task-manager"
   "extensions/safety-gate:extensions/safety-gate"
+  "extensions/cockpit:extensions/cockpit"
 )
 
 status=0

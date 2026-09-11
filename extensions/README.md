@@ -10,6 +10,9 @@ built-in tools. They are implemented incrementally.
   structured results, and evidence-based handoffs (Phase 9).
 - `safety-gate/` — fail-closed approval gates for destructive shell commands
   and writes to credential/secret paths (Phase 10).
+- `cockpit/` — orchestration UX. Ships the opt-in `cockpit-dark` theme and adds a
+  role/task identity badge to the footer (Phase 15, part A). See
+  [`../docs/cockpit.md`](../docs/cockpit.md).
 
 See `docs/architecture.md`. Extension format: Pi loads `.ts`/`.js` extensions
 from `~/.pi/agent/extensions/` and project `.pi/extensions/`.
