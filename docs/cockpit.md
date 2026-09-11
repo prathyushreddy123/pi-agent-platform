@@ -33,9 +33,9 @@ multi-agent work is *which agent this pane is*. Everything else is theming and
 
 - **A — Theme + role badge (done).** Ships the `cockpit-dark` theme and a
   colored role/task badge in the footer.
-- **B — Lead-pane roster widget (planned).** A compact, throttled, idle-gated
-  table of all agents (`herdr agent list` + task state), rendered only in the
-  lead pane.
+- **B — Lead-pane roster widget (done).** A compact, throttled table of all
+  agents from `herdr agent list`, rendered below the editor in the lead pane
+  only. Self-hides when the lead is the only pane.
 - **C — Layout + sidebar (planned).** Workspace/tab labeling that makes Herdr's
   sidebar a useful navigator, plus optional sidebar config
   (`sidebar_start_collapsed`, `sidebar_collapsed_mode = "compact"`). Consistent
@@ -91,6 +91,34 @@ coherent under any theme:
 
 The badge only renders in interactive (`tui`) mode; it is skipped in
 `print`/`json`/`rpc` runs.
+
+## Part B: the agent roster
+
+In the **lead** pane, the cockpit renders a compact roster below the editor,
+polled from `herdr agent list` (read-only) every 4s (override with
+`COCKPIT_ROSTER_INTERVAL_MS`, floor 1500ms):
+
+```
+agents (3)
+● invoice-worker worker · working
+● invoice-reviewer reviewer · blocked
+● π - lead (you) · idle
+```
+
+- Each row: a status dot colored by lifecycle state (working=accent, done=
+  success, blocked/error=error, idle=muted), the agent name, its inferred role,
+  and its lifecycle state. This pane is marked `(you)`.
+- Agent identity prefers the orchestrator-assigned `name`, falling back to the
+  terminal title, then the pane id.
+- The widget **self-hides** when the lead is the only pane, so a solo session
+  wastes no space. It only renders in `tui` mode inside a Herdr pane, and only
+  in the lead pane (worker/reviewer panes do not render a roster).
+- Redraws only happen when the rendered rows actually change.
+
+### `/cockpit` command
+
+- `/cockpit` — toggle the roster on/off.
+- `/cockpit refresh` — force an immediate refresh.
 
 ## Install / verify
 

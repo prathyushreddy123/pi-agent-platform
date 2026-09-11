@@ -19,7 +19,7 @@ Incremental build. Status as of initial scaffold.
 | 12 | Herdr workspace layout template | done ([adaptive layout](herdr-workspace-layout.md)) |
 | 13 | Client project template | done ([safe project overlay](client-project-template.md)) |
 | 14 | Package & bootstrap | done ([fresh-machine guide](bootstrap.md)) |
-| 15 | Orchestration cockpit (theme + footer + roster) | in progress ([cockpit](cockpit.md)) — part A (theme + role badge) done |
+| 15 | Orchestration cockpit (theme + footer + roster) | in progress ([cockpit](cockpit.md)) — parts A (theme + role badge) and B (lead-pane roster) done; part C (layout + sidebar) planned |
 
 Prompts, skills, the global AGENTS.md, and repository-owned extensions are
 symlinked from this repo into `~/.pi/agent/` via `scripts/bootstrap.sh`, so this
