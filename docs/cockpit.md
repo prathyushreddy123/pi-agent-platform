@@ -47,9 +47,11 @@ multi-agent work is *which agent this pane is*. Everything else is theming and
 diffs (high-contrast syntax, clear added/removed colors) with role-coded
 thinking-level colors. It is **opt-in**: it does not change your default theme.
 
-Activate it with the `/theme` selector (choose `cockpit-dark`), or set
-`"theme": "cockpit-dark"` in `~/.pi/agent/settings.json` once you are happy with
-it.
+Select it inside a running Pi session with `/settings` (choose `cockpit-dark`
+under the theme option), or set `"theme": "cockpit-dark"` in
+`~/.pi/agent/settings.json`, or launch with `pi --use-theme cockpit-dark` to try
+it for a single run without saving. Pi has no `/theme` command, and these are Pi
+commands — run them in a Pi pane, not in another agent's terminal.
 
 The theme is exposed to Pi through the extension's `resources_discover`
 handler (`themePaths`), so it travels with the extension and needs no separate

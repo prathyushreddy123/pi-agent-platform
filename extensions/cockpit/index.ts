@@ -10,7 +10,7 @@ import type {
  * cockpit — orchestration UX for the multi-agent platform.
  *
  * Phase A (this file):
- *   - Ships the `cockpit-dark` theme (opt-in via /theme) through resources_discover.
+ *   - Ships the `cockpit-dark` theme (opt-in via /settings) through resources_discover.
  *   - Adds a role/task identity badge to Pi's built-in footer via ctx.ui.setStatus().
  *
  * Pi's built-in footer already shows pwd, git branch, session name, token usage,
@@ -63,7 +63,7 @@ function resolveTask(sessionName: string | undefined): string | undefined {
 }
 
 export default function cockpit(pi: ExtensionAPI) {
-  // Expose the bundled theme(s) directory so `cockpit-dark` shows up in /theme.
+  // Expose the bundled theme(s) directory so `cockpit-dark` shows up in /settings.
   const themesDir = fileURLToPath(new URL("./themes", import.meta.url));
 
   pi.on("resources_discover", (): ResourcesDiscoverResult => {
