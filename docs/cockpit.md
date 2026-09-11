@@ -36,9 +36,8 @@ multi-agent work is *which agent this pane is*. Everything else is theming and
 - **B — Lead-pane roster widget (done).** A compact, throttled table of all
   agents from `herdr agent list`, rendered below the editor in the lead pane
   only. Self-hides when the lead is the only pane.
-- **C — Layout + sidebar (planned).** Workspace/tab labeling that makes Herdr's
-  sidebar a useful navigator, plus optional sidebar config
-  (`sidebar_start_collapsed`, `sidebar_collapsed_mode = "compact"`). Consistent
+- **C — Layout + sidebar (done).** Repo-owned Herdr sidebar config plus a
+  labeling convention that makes Herdr's sidebar a useful navigator. Consistent
   with Phase 12, this does **not** force a fixed pane grid.
 
 ## Part A: the theme
@@ -119,6 +118,43 @@ agents (3)
 
 - `/cockpit` — toggle the roster on/off.
 - `/cockpit refresh` — force an immediate refresh.
+
+## Part C: sidebar & layout
+
+Herdr's left sidebar lists workspaces with a live agent-status dot per
+workspace/tab. With a single workspace it is mostly empty, wasting a column.
+Part C addresses this two ways, layered.
+
+### Reclaim the space (config)
+
+`templates/herdr-config.toml` sets, under `[ui]`:
+
+```toml
+sidebar_start_collapsed = true
+sidebar_collapsed_mode  = "compact"
+```
+
+The sidebar starts as a narrow **status rail** (still glanceable, no dead
+column); toggle it full-width live with `prefix+b`. `sidebar_start_collapsed`
+takes effect on the next Herdr launch.
+
+Because Herdr **writes to its own config** (e.g. `herdr config reset-keys`), this
+file is **copy-installed, never symlinked**: `scripts/bootstrap.sh` copies it to
+`~/.herdr/config.toml` **only when no config exists**, and never overwrites an
+existing one. If you already have a config, add the two keys yourself (see the
+template). This is the one cockpit asset that is not a live symlink, so the repo
+is the *initial* source rather than a continuously linked one.
+
+### Make it earn its place (labeling)
+
+When expanded, the sidebar is only useful if workspaces and tabs are named
+consistently. Reuse the existing convention from
+[`herdr-workspace-layout.md`](herdr-workspace-layout.md): one workspace per
+repository (`<repository-name>`), task tabs `task-<task-id>`, and agents
+`<task-id>-worker` / `<task-id>-reviewer`. With that, a glance at the sidebar
+reads as a live project/agent index — and the same names drive the roster's role
+inference and the footer badge. Consistent with Phase 12, this stays a
+convention, not an enforced layout script.
 
 ## Install / verify
 

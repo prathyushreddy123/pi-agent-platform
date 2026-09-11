@@ -11,10 +11,14 @@ The bootstrap links these portable assets into `~/.pi/agent/`:
 - prompts;
 - skills;
 - the global `AGENTS.md`;
-- the Herdr orchestrator, task manager, and safety gate extensions.
+- the Herdr orchestrator, task manager, safety gate, and cockpit extensions.
+
+It also installs the cockpit Herdr sidebar config into `~/.herdr/config.toml`,
+but only when no config exists (a copy, never a symlink, never an overwrite).
 
 It checks required commands and the Herdr Pi integration. It does not install
-software, authenticate providers, or manage files owned by Pi or Herdr.
+software, authenticate providers, or overwrite existing files owned by Pi or
+Herdr.
 
 ## Prerequisites
 
@@ -70,7 +74,9 @@ The bootstrap intentionally does not read, copy, link, or overwrite:
 - provider/model stores;
 - Pi sessions or logs;
 - task-manager runtime state;
-- Herdr configuration or generated integration files.
+- an existing Herdr `config.toml` or generated integration files (it creates
+  `~/.herdr/config.toml` from `templates/herdr-config.toml` only when none
+  exists, and never modifies one that is already there).
 
 ## Safe behavior
 

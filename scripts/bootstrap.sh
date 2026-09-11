@@ -10,6 +10,11 @@
 # secrets/runtime state in ~/.pi/agent/ (auth.json, models-store.json,
 # sessions/, settings.json, etc.).
 #
+# It also installs the cockpit Herdr UI config (sidebar defaults) into
+# ~/.herdr/config.toml, but ONLY when no config exists. Herdr writes to its own
+# config, so this is a copy (never a symlink) and an existing config is never
+# overwritten.
+#
 # Usage:
 #   bootstrap.sh            # link, backing up conflicting destinations
 #   bootstrap.sh --dry-run  # show what would happen, change nothing
@@ -19,6 +24,9 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PI_HOME="${PI_HOME:-$HOME/.pi/agent}"
+HERDR_HOME="${HERDR_HOME:-$HOME/.herdr}"
+HERDR_CONFIG_SRC="$REPO_ROOT/templates/herdr-config.toml"
+HERDR_CONFIG_DST="$HERDR_HOME/config.toml"
 DRY_RUN=0
 CHECK=0
 
@@ -65,6 +73,45 @@ check_herdr_integration() {
   info "NEEDS ACTION: Herdr Pi integration is not current"
   info "run: herdr integration install pi"
   [[ $CHECK -eq 1 ]] && status=1
+}
+
+# Install the cockpit Herdr UI config, only when no config exists. Herdr owns and
+# rewrites its config, so this is a copy (never a link) and never an overwrite.
+install_herdr_config() {
+  if [[ ! -f "$HERDR_CONFIG_SRC" ]]; then
+    info "MISSING: source $HERDR_CONFIG_SRC"
+    status=1
+    return
+  fi
+
+  if [[ $CHECK -eq 1 ]]; then
+    if [[ -f "$HERDR_CONFIG_DST" ]]; then
+      if grep -q 'sidebar_collapsed_mode' "$HERDR_CONFIG_DST" 2>/dev/null; then
+        info "ok:   $HERDR_CONFIG_DST has cockpit sidebar settings"
+      else
+        info "note: $HERDR_CONFIG_DST exists without cockpit sidebar settings"
+        info "      (not managed automatically; see templates/herdr-config.toml)"
+      fi
+    else
+      info "note: $HERDR_CONFIG_DST not installed (run bootstrap to create it)"
+    fi
+    return
+  fi
+
+  if [[ -f "$HERDR_CONFIG_DST" ]]; then
+    info "skip: $HERDR_CONFIG_DST exists (not overwriting); ensure [ui] sidebar keys"
+    info "      match templates/herdr-config.toml if you want the cockpit defaults"
+    return
+  fi
+
+  if [[ $DRY_RUN -eq 1 ]]; then
+    info "would install: $HERDR_CONFIG_DST (copy of templates/herdr-config.toml)"
+    return
+  fi
+
+  mkdir -p "$HERDR_HOME"
+  cp "$HERDR_CONFIG_SRC" "$HERDR_CONFIG_DST"
+  info "installed: $HERDR_CONFIG_DST"
 }
 
 # Each entry: <source-in-repo> <destination-in-PI_HOME>
@@ -147,5 +194,7 @@ done
 if [[ $prerequisites_ok -eq 1 ]]; then
   check_herdr_integration
 fi
+
+install_herdr_config
 
 exit "$status"

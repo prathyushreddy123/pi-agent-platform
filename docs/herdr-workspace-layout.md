@@ -41,6 +41,10 @@ Use stable task IDs across task state, branches, worktrees, tabs, and agents:
 Names must still satisfy the stricter syntax of the tool that creates them. Use
 a shorter task ID if a generated name would exceed a tool limit.
 
+These same names drive Herdr's sidebar (a live per-workspace/tab status index)
+and the cockpit's roster and footer badge. The cockpit ships a sidebar config
+that starts it as a narrow status rail; see [`cockpit.md`](cockpit.md).
+
 ## Working directories
 
 - The `control` tab starts in the project's main checkout.

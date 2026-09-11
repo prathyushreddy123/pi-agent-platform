@@ -1,0 +1,21 @@
+# Herdr configuration — cockpit sidebar defaults (Phase 15, part C).
+#
+# Herdr merges this file over its built-in defaults, so only the keys we care
+# about need to appear here. Run `herdr --default-config` to see everything else.
+#
+# This file is INSTALLED (copied), never symlinked: Herdr writes to its own
+# config.toml (e.g. `herdr config reset-keys`), so a symlink would let Herdr
+# mutate tracked repository content. `scripts/bootstrap.sh` copies this into
+# ~/.herdr/config.toml only when no config exists; it never overwrites an
+# existing one. After changing this template, apply it by hand or reinstall into
+# a fresh ~/.herdr.
+
+[ui]
+# Reclaim the left vertical strip: start collapsed to a narrow status rail that
+# still shows per-workspace agent-status dots (rather than an empty column).
+# Toggle live with prefix+b. Takes effect on the next Herdr launch.
+sidebar_start_collapsed = true
+
+# "compact" keeps the narrow status rail when collapsed; "hidden" uses zero
+# width. Compact avoids dead space while staying glanceable.
+sidebar_collapsed_mode = "compact"
