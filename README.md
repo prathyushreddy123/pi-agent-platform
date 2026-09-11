@@ -6,8 +6,8 @@ built around [Pi Coding Agent](https://github.com/badlogic/pi) and
 
 This repository is the **source of truth** for my custom Pi/agent setup. It is
 designed to be cloned onto a fresh WSL/Linux machine and bootstrapped into
-`~/.pi/agent/` (see [`docs/architecture.md`](docs/architecture.md) and, later,
-`scripts/bootstrap.sh`).
+`~/.pi/agent/` (see the [architecture](docs/architecture.md) and
+[fresh-machine guide](docs/bootstrap.md)).
 
 ## Layout
 
@@ -37,12 +37,26 @@ agent-platform/
 - **Docker/sandbox** — optional execution isolation, deferred until untrusted
   execution requires it.
 
+## Bootstrap
+
+After installing Git, Node.js, Pi, and Herdr:
+
+```bash
+scripts/bootstrap.sh --dry-run
+scripts/bootstrap.sh
+herdr integration install pi
+scripts/bootstrap.sh --check
+```
+
+The bootstrap never installs software or manages credentials and runtime state.
+See [`docs/bootstrap.md`](docs/bootstrap.md) for setup and recovery details.
+
 ## Status
 
-Phases 0–10 and 12–13 are complete, including safe worktree automation, Pi ↔
+Phases 0–10 and 12–14 are complete, including safe worktree automation, Pi ↔
 Herdr orchestration, lead/worker/reviewer workflow, durable task state and
 handoffs, fail-closed safety gates, an
-[adaptive Herdr workspace layout](docs/herdr-workspace-layout.md), and a
-[safe client-project overlay](docs/client-project-template.md). Docker sandboxing
-is deferred until untrusted execution requires it. See
-[`docs/roadmap.md`](docs/roadmap.md) for phase status.
+[adaptive Herdr workspace layout](docs/herdr-workspace-layout.md), a
+[safe client-project overlay](docs/client-project-template.md), and reproducible
+fresh-machine bootstrap. Docker sandboxing is deferred until untrusted execution
+requires it. See [`docs/roadmap.md`](docs/roadmap.md) for phase status.

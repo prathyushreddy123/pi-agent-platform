@@ -76,6 +76,14 @@ boundaries, data restrictions, and delivery requirements without repeating the
 global rules. Adopt it using the
 [client project template](client-project-template.md).
 
+## Portability boundary
+
+The repository owns portable prompts, skills, rules, extensions, templates, and
+helper scripts. `scripts/bootstrap.sh` links those assets and verifies required
+tools; Herdr owns its generated Pi state integration. Provider credentials,
+settings, sessions, logs, and task runtime state remain outside Git. See the
+[fresh-machine bootstrap guide](bootstrap.md).
+
 ## Principles
 
 Optimize for isolation, reliability, context quality, reproducibility,

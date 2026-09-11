@@ -11,9 +11,9 @@
 # sessions/, settings.json, etc.).
 #
 # Usage:
-#   bootstrap.sh            # link, backing up any existing real files
+#   bootstrap.sh            # link, backing up conflicting destinations
 #   bootstrap.sh --dry-run  # show what would happen, change nothing
-#   bootstrap.sh --check    # verify links are correct; nonzero if not
+#   bootstrap.sh --check    # verify prerequisites, integration, and links
 
 set -euo pipefail
 
@@ -32,6 +32,41 @@ esac
 
 info() { printf '%s\n' "$*" >&2; }
 
+path_exists() {
+  [[ -e "$1" || -L "$1" ]]
+}
+
+check_prerequisites() {
+  local cmd missing=0
+  for cmd in git node pi herdr; do
+    if command -v "$cmd" >/dev/null 2>&1; then
+      info "ok:   dependency $cmd"
+    else
+      info "MISSING: required command '$cmd'"
+      missing=1
+      status=1
+    fi
+  done
+
+  if [[ $missing -eq 1 ]]; then
+    info "install missing prerequisites, then rerun bootstrap (see docs/bootstrap.md)"
+    return 1
+  fi
+}
+
+check_herdr_integration() {
+  local integration_status
+  integration_status="$(herdr integration status 2>/dev/null || true)"
+  if grep -q '^pi: current ' <<<"$integration_status"; then
+    info "ok:   Herdr Pi integration is current"
+    return
+  fi
+
+  info "NEEDS ACTION: Herdr Pi integration is not current"
+  info "run: herdr integration install pi"
+  [[ $CHECK -eq 1 ]] && status=1
+}
+
 # Each entry: <source-in-repo> <destination-in-PI_HOME>
 LINKS=(
   "prompts:prompts"
@@ -47,7 +82,11 @@ status=0
 link_one() {
   local src="$REPO_ROOT/$1" dst="$PI_HOME/$2"
 
-  [[ -e "$src" ]] || { info "skip: missing source $src"; return; }
+  if [[ ! -e "$src" ]]; then
+    info "MISSING: source $src"
+    status=1
+    return
+  fi
 
   if [[ $CHECK -eq 1 ]]; then
     if [[ -L "$dst" && "$(readlink -f "$dst")" == "$(readlink -f "$src")" ]]; then
@@ -66,29 +105,46 @@ link_one() {
 
   if [[ $DRY_RUN -eq 1 ]]; then
     info "would link: $dst -> $src"
-    if [[ -e "$dst" && ! -L "$dst" ]]; then
-      info "  (would back up existing $dst)"
+    if path_exists "$dst"; then
+      info "  (would back up conflicting $dst)"
     fi
     return 0
   fi
 
   mkdir -p "$(dirname "$dst")"
-  # Back up a real (non-symlink) file/dir before replacing it.
-  if [[ -e "$dst" && ! -L "$dst" ]]; then
-    local backup="$dst.bak.$(date +%Y%m%d%H%M%S)"
+  # Preserve files, directories, and foreign/dangling symlinks before replacing.
+  if path_exists "$dst"; then
+    local backup
+    backup="$dst.bak.$(date +%Y%m%d%H%M%S).$$"
     info "backing up existing $dst -> $backup"
     mv "$dst" "$backup"
   fi
-  ln -sfn "$src" "$dst"
+  ln -s "$src" "$dst"
   info "linked: $dst -> $src"
 }
 
 info "repo: $REPO_ROOT"
 info "pi home: $PI_HOME"
-mkdir -p "$PI_HOME"
+
+prerequisites_ok=1
+check_prerequisites || prerequisites_ok=0
+
+# Avoid a partially configured installation when a normal bootstrap lacks tools.
+# Dry-run and check continue so they can report all expected links.
+if [[ $prerequisites_ok -eq 0 && $DRY_RUN -eq 0 && $CHECK -eq 0 ]]; then
+  exit "$status"
+fi
+
+if [[ $DRY_RUN -eq 0 && $CHECK -eq 0 ]]; then
+  mkdir -p "$PI_HOME"
+fi
 
 for entry in "${LINKS[@]}"; do
   link_one "${entry%%:*}" "${entry##*:}"
 done
 
-exit $status
+if [[ $prerequisites_ok -eq 1 ]]; then
+  check_herdr_integration
+fi
+
+exit "$status"

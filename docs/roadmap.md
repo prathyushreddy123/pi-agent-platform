@@ -18,11 +18,11 @@ Incremental build. Status as of initial scaffold.
 | 11 | Sandboxed execution (Docker) | deferred (on demand for untrusted execution) |
 | 12 | Herdr workspace layout template | done ([adaptive layout](herdr-workspace-layout.md)) |
 | 13 | Client project template | done ([safe project overlay](client-project-template.md)) |
-| 14 | Package & bootstrap | partial (scripts/bootstrap.sh) |
+| 14 | Package & bootstrap | done ([fresh-machine guide](bootstrap.md)) |
 
 Prompts, skills, the global AGENTS.md, and repository-owned extensions are
 symlinked from this repo into `~/.pi/agent/` via `scripts/bootstrap.sh`, so this
 repo is the single source of truth with no drift. Herdr's generated state hook
-remains managed directly by `herdr integration install pi`. Run
-`scripts/bootstrap.sh --check` to verify links. Remaining Phase 14 work: a full
-fresh-machine bootstrap.
+remains managed directly by `herdr integration install pi`. The
+[fresh-machine guide](bootstrap.md) documents prerequisites, safe linking,
+verification, updates, and recovery.
