@@ -3,33 +3,28 @@
 ## Target
 
 ```
-                    ME
-                     |
-                     v
-                 HERDR  (project workspace: control / build / review / runtime)
-                     |
-                     v
-                 LEAD PI
-                     |
-          +----------+----------+
-          |                     |
-          v                     v
-       WORKER               REVIEWER
-          |                     |
-          +----------+----------+
-                     |
-                Git worktrees
-                     |
-              Docker / sandbox
-                     |
-                tests / build
-                     |
-                  Git diff
-                     |
-                     v
-                    ME  (approve / merge)
-                     |
-                   CI/CD
+                         ME
+                          |
+                          v
+                HERDR PROJECT WORKSPACE
+                          |
+              +-----------+-----------+
+              |                       |
+         control tab            task tab (on demand)
+          LEAD PI              WORKER -> REVIEWER
+                                      |
+                                 Git worktree
+                                      |
+                                tests / build
+                                      |
+                                   Git diff
+                                      |
+                                      v
+                             ME (approve / merge)
+                                      |
+                                    CI/CD
+
+              runtime tab (optional server / logs)
 ```
 
 I am the final approval point for merges, pushes, deployments, and destructive
@@ -42,7 +37,7 @@ actions.
 | Control plane | workspaces, panes, agent processes, terminals, servers, logs | Herdr |
 | Agent layer | reasoning, tools, skills, prompts, delegation | Pi |
 | Isolation | task/branch isolation | Git worktrees |
-| Execution isolation | untrusted/risky execution | Docker/sandbox (later) |
+| Execution isolation | untrusted/risky execution | Docker/sandbox (deferred until needed) |
 
 ## Component types
 
@@ -65,6 +60,21 @@ actions.
 
 Extensions are scaffolded but implemented incrementally, only after the simpler
 layers prove reliable.
+
+## Herdr workspace convention
+
+Use one workspace per repository, a persistent `control` tab for the lead, and
+task/runtime tabs only when needed. Worker and reviewer panes use the task
+worktree; review begins after the worker settles. See
+[`herdr-workspace-layout.md`](herdr-workspace-layout.md).
+
+## Client project convention
+
+Keep client repositories isolated under `~/src/clients/<client>/<project>`.
+Each repository may add a project `AGENTS.md` containing verified commands,
+boundaries, data restrictions, and delivery requirements without repeating the
+global rules. Adopt it using the
+[client project template](client-project-template.md).
 
 ## Principles
 

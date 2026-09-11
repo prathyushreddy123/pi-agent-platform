@@ -15,9 +15,9 @@ Incremental build. Status as of initial scaffold.
 | 8 | Lead / worker / reviewer workflow | done ([demo](phase8-demo.md)) |
 | 9 | Task state | done ([JSON state and handoffs](task-state.md)) |
 | 10 | Safety gates | done ([policy and limitations](safety-gates.md)) |
-| 11 | Sandboxed execution (Docker) | planned |
-| 12 | Herdr workspace layout template | planned |
-| 13 | Client project template | planned |
+| 11 | Sandboxed execution (Docker) | deferred (on demand for untrusted execution) |
+| 12 | Herdr workspace layout template | done ([adaptive layout](herdr-workspace-layout.md)) |
+| 13 | Client project template | done ([safe project overlay](client-project-template.md)) |
 | 14 | Package & bootstrap | partial (scripts/bootstrap.sh) |
 
 Prompts, skills, the global AGENTS.md, and repository-owned extensions are

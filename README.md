@@ -34,11 +34,15 @@ agent-platform/
 - **Herdr** — workspaces, tabs, panes, agent processes, terminals, servers, logs.
   (No tmux.)
 - **Git + worktrees** — source of truth and per-task isolation.
-- **Docker/sandbox** — execution isolation, added when appropriate.
+- **Docker/sandbox** — optional execution isolation, deferred until untrusted
+  execution requires it.
 
 ## Status
 
-Phases 0–10 are complete, including safe worktree automation, Pi ↔ Herdr
-orchestration, lead/worker/reviewer workflow, durable task state and handoffs,
-and fail-closed safety gates. See [`docs/roadmap.md`](docs/roadmap.md) for phase
-status.
+Phases 0–10 and 12–13 are complete, including safe worktree automation, Pi ↔
+Herdr orchestration, lead/worker/reviewer workflow, durable task state and
+handoffs, fail-closed safety gates, an
+[adaptive Herdr workspace layout](docs/herdr-workspace-layout.md), and a
+[safe client-project overlay](docs/client-project-template.md). Docker sandboxing
+is deferred until untrusted execution requires it. See
+[`docs/roadmap.md`](docs/roadmap.md) for phase status.
